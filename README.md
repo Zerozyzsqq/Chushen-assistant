@@ -56,10 +56,46 @@
 
 ### 技术架构
 
-<div align="center">
-  <img src="data/1.png" alt="厨神助手 Multi-Agent 架构图" width="100%">
-  <p><i>图：厨神助手 Multi-Agent 系统架构总览</i></p>
-</div>
+```mermaid
+flowchart TB
+    subgraph FE["前端 · Vue 3"]
+        Chat["对话 / 菜谱卡片 / 视频教程"]
+        Kitchen["我的厨房 · 虚拟冰箱 · 饮食画像"]
+    end
+
+    subgraph API["后端 · FastAPI"]
+        ChatAPI["/api/v1/chat"]
+        VisionAPI["/api/v1/vision · upload · media"]
+    end
+
+    subgraph Agent["LangGraph Multi-Agent"]
+        L1["L1 主路由<br/>意图识别"]
+        L2A["L2 图谱子图<br/>Cypher · GraphRAG · Text2SQL"]
+        L2B["L2 知识库子图<br/>RAG · Rerank"]
+        L2C["识图排餐 · 饮食护栏"]
+    end
+
+    subgraph Store["数据层"]
+        Neo4j[("Neo4j 菜谱图谱")]
+        MySQL[("MySQL 统计")]
+        PG[("PostgreSQL pgvector")]
+        Milvus[("Milvus 向量")]
+        LightRAG[("LightRAG")]
+    end
+
+    Chat --> ChatAPI
+    Kitchen --> ChatAPI
+    ChatAPI --> L1
+    VisionAPI --> L2C
+    L1 --> L2A
+    L1 --> L2B
+    L1 --> L2C
+    L2A --> Neo4j
+    L2A --> MySQL
+    L2A --> LightRAG
+    L2B --> PG
+    L2B --> Milvus
+```
 
 本项目采用 **三层 Multi-Agent 架构**，将复杂的菜谱知识服务拆解为清晰的层次化设计：
 
@@ -231,129 +267,7 @@ git push
 
 ---
 
-### 系统架构图
-
-
-```mermaid
-graph TB
-    %% ========== 用户入口 ==========
-    Start([用户提问]) --> MainGraph[LangGraph 主工作流]
-
-    %% ========== 第一层：主路由层 ==========
-    MainGraph --> RouterNode["analyze_and_route_query<br/>━━━━━━━━━━━━━━━━<br/>系统提示: ROUTER_SYSTEM_PROMPT<br/>启发式路由 + LLM 路由双保险<br/>结构化输出: Router Pydantic Model"]
-
-    RouterNode --> RouteDecision{"route_query<br/>条件路由"}
-
-    RouteDecision -->|general-query| GeneralNode["respond_to_general_query<br/>━━━━━━━━━━━━━━━━<br/>GENERAL_QUERY_SYSTEM_PROMPT<br/>纯 LLM 生成回复<br/>不调用任何外部工具"]
-
-    RouteDecision -->|additional-query| AdditionalNode["get_additional_info<br/>━━━━━━━━━━━━━━━━<br/>GET_ADDITIONAL_SYSTEM_PROMPT<br/>Guardrails 安全检查<br/>引导用户提供更多信息"]
-
-    RouteDecision -->|graphrag-query<br/>text2sql-query| ResearchNode["create_research_plan<br/>━━━━━━━━━━━━━━━━<br/>调用 GraphRAG 多工具子图"]
-
-    RouteDecision -->|kb-query| KBNode["create_kb_query<br/>━━━━━━━━━━━━━━━━<br/>调用知识库多工具子图"]
-
-    RouteDecision -->|image-query| ImageNode["create_image_query<br/>━━━━━━━━━━━━━━━━<br/>图片识别: Vision Model<br/>图片生成: CogView-4"]
-
-    RouteDecision -->|file-query| FileNode["create_file_query<br/>━━━━━━━━━━━━━━━━<br/>Excel: 外部 Ingest Service<br/>TXT/MD/JSON: KnowledgeService"]
-
-    %% ========== 第二层A：GraphRAG 多工具子图 ==========
-    ResearchNode --> SubGraph1["╔═══════════════════════════════════════╗<br/>║  GraphRAG 多工具子图 (create_multi_tool_workflow)  ║<br/>╚═══════════════════════════════════════╝"]
-
-    SubGraph1 --> SG1_Guardrails["Guardrails Node<br/>━━━━━━━━━━━━━━━━<br/>GUARDRAILS_SYSTEM_PROMPT<br/>检查问题范围<br/>图谱 Schema 验证"]
-
-    SG1_Guardrails --> SG1_GuardCheck{"通过检查?"}
-    SG1_GuardCheck -->|拒绝 end| SG1_FinalAnswer_Reject["直接返回拒绝消息"]
-    SG1_GuardCheck -->|通过 proceed| SG1_Planner["Planner Node<br/>━━━━━━━━━━━━━━━━<br/>任务分解提示<br/>Map-Reduce 模式<br/>将复杂问题拆解为子任务"]
-
-    SG1_Planner --> SG1_MapReduce["map_reduce_planner_to_tool_selection<br/>━━━━━━━━━━━━━━━━<br/>条件边逻辑<br/>遍历每个子任务"]
-
-    SG1_MapReduce --> SG1_ToolSelection["Tool Selection Node<br/>━━━━━━━━━━━━━━━━<br/>根据 tool_schemas 选择工具<br/>LLM structured output<br/>工具列表:<br/>  • cypher_query<br/>  • predefined_cypher<br/>  • microsoft_graphrag_query<br/>  • text2sql_query"]
-
-    SG1_ToolSelection --> SG1_ToolDecision{"选择的工具?"}
-
-    SG1_ToolDecision -->|cypher_query| SG1_Cypher["Cypher Query Node<br/>━━━━━━━━━━━━━━━━<br/>动态生成 Cypher<br/>BaseCypherExampleRetriever<br/>  检索 Few-shot 示例<br/>LLM 生成查询语句<br/>Cypher 验证 (可选)<br/>Neo4j 执行查询<br/>返回图谱数据"]
-
-    SG1_ToolDecision -->|predefined_cypher| SG1_Predefined["Predefined Cypher Node<br/>━━━━━━━━━━━━━━━━<br/>predefined_cypher_dict<br/>匹配预定义查询<br/>Neo4j 直接执行<br/>快速、准确"]
-
-    SG1_ToolDecision -->|microsoft_graphrag_query| SG1_GraphRAG["Microsoft GraphRAG Node<br/>━━━━━━━━━━━━━━━━<br/>LightRAG 社区检索<br/>Global Search (全局)<br/>Local Search (局部)<br/>Hybrid Search (混合)<br/>社区摘要 + 实体关系"]
-
-    SG1_ToolDecision -->|text2sql_query| SG1_Text2SQL["Text2SQL Query Node<br/>━━━━━━━━━━━━━━━━<br/>自然语言转 SQL<br/>LLM 生成 SQL 语句<br/>支持统计、聚合、排名<br/>MySQL 执行查询<br/>返回结构化数据"]
-
-    SG1_Cypher --> SG1_Summarize["Summarize Node<br/>━━━━━━━━━━━━━━━━<br/>聚合所有工具结果<br/>合并 data 字段<br/>LLM 初步整理"]
-    SG1_Predefined --> SG1_Summarize
-    SG1_GraphRAG --> SG1_Summarize
-    SG1_Text2SQL --> SG1_Summarize
-
-    SG1_Summarize --> SG1_FinalAnswer["Final Answer Node<br/>━━━━━━━━━━━━━━━━<br/>RAGSEARCH_SYSTEM_PROMPT<br/>LLM 生成最终回答<br/>引用来源标注<br/>幻觉检查 (可选)"]
-
-    SG1_FinalAnswer --> SG1_End["返回到主工作流<br/>answer 字段"]
-    SG1_FinalAnswer_Reject --> SG1_End
-
-    %% ========== 第二层B：知识库多工具子图 ==========
-    KBNode --> SubGraph2["╔═══════════════════════════════════════╗<br/>║  知识库多工具子图 (create_kb_multi_tool_workflow)  ║<br/>╚═══════════════════════════════════════╝"]
-
-    SubGraph2 --> SG2_Guardrails["KB Guardrails Node<br/>━━━━━━━━━━━━━━━━<br/>KBGuardrailsDecision<br/>scope_description 范围检查<br/>仅处理历史文化典故类问题"]
-
-    SG2_Guardrails --> SG2_GuardCheck{"通过检查?"}
-    SG2_GuardCheck -->|decision=end| SG2_Finalize_Reject["直接返回拒绝<br/>返回 summary"]
-    SG2_GuardCheck -->|decision=proceed| SG2_Router["KB Router Node<br/>━━━━━━━━━━━━━━━━<br/>KBRouteDecision<br/>LLM 路由决策<br/>路由类型:<br/>  • local (本地检索)<br/>  • external (外部API)<br/>  • hybrid (混合)<br/>工具选择:<br/>  • postgres (优先)<br/>  • milvus (兜底)"]
-
-    SG2_Router --> SG2_RouteCheck{"路由类型?"}
-
-    SG2_RouteCheck -->|local/hybrid| SG2_LocalSearch["Local Search Node<br/>━━━━━━━━━━━━━━━━<br/>PostgreSQL 优先策略:<br/>━━━━━━━━━━━━━━━━<br/>Step 1: 查询 PostgreSQL pgvector<br/>  • 结构化数据 (Excel 导入)<br/>  • 菜谱名称、菜系、枚举字段<br/>  • 快速、精准<br/>  • threshold 阈值过滤<br/>━━━━━━━━━━━━━━━━<br/>Step 2: 如果 PG 有结果<br/>  → 直接使用，跳过 Milvus<br/>━━━━━━━━━━━━━━━━<br/>Step 3: 如果 PG 无结果<br/>  → Milvus 向量库兜底<br/>  • 长文本故事、典故<br/>  • 语义相似度检索<br/>  • threshold 阈值过滤"]
-
-    SG2_RouteCheck -->|external| SG2_ExternalSearch
-
-    SG2_LocalSearch --> SG2_PG[("PostgreSQL pgvector<br/>━━━━━━━━━━━━━━━━<br/>结构化向量数据<br/>快速精准查询<br/>similarity 相似度<br/>第一优先级")]
-
-    SG2_LocalSearch --> SG2_Milvus[("Milvus 向量库<br/>━━━━━━━━━━━━━━━━<br/>长文本语义检索<br/>故事、典故内容<br/>similarity 相似度<br/>兜底策略")]
-
-    SG2_PG --> SG2_Reranker{"Reranker 启用?"}
-    SG2_Milvus --> SG2_Reranker
-
-    SG2_Reranker -->|是| SG2_RerankProcess["Reranker 重排序<br/>━━━━━━━━━━━━━━━━<br/>Reranker API<br/>  • Cohere / Jina / Voyage / BGE<br/>━━━━━━━━━━━━━━━━<br/>双重阈值过滤:<br/>  • similarity >= threshold<br/>  • rerank_score >= threshold<br/>━━━━━━━━━━━━━━━━<br/>提升结果质量"]
-
-    SG2_Reranker -->|否| SG2_MergeResults["合并结果"]
-    SG2_RerankProcess --> SG2_MergeResults
-
-    SG2_MergeResults --> SG2_ResultCheck{"结果充足?"}
-    SG2_ResultCheck -->|是| SG2_Finalize
-    SG2_ResultCheck -->|否 且 hybrid| SG2_ExternalSearch["External Search Node<br/>━━━━━━━━━━━━━━━━<br/>external_search_url<br/>调用外部检索 API<br/>互联网知识补充<br/>timeout 超时控制"]
-
-    SG2_ExternalSearch --> SG2_Finalize["Finalize Node<br/>━━━━━━━━━━━━━━━━<br/>final_prompt<br/>LLM 融合多源信息:<br/>  • Milvus 结果<br/>  • PostgreSQL 结果<br/>  • External 结果<br/>━━━━━━━━━━━━━━━━<br/>格式化 context<br/>收集 sources<br/>生成最终回答"]
-
-    SG2_Finalize --> SG2_End["返回到主工作流<br/>answer + sources 字段"]
-    SG2_Finalize_Reject --> SG2_End
-
-    %% ========== 汇总返回 ==========
-    GeneralNode --> End([返回用户])
-    AdditionalNode --> End
-    ImageNode --> End
-    FileNode --> End
-    SG1_End --> End
-    SG2_End --> End
-
-    %% ========== 样式定义 ==========
-    classDef entryClass fill:#e3f2fd,stroke:#1565c0,stroke-width:3px,color:#000
-    classDef routerClass fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
-    classDef nodeClass fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#000
-    classDef subgraphClass fill:#ffe0b2,stroke:#e65100,stroke-width:3px,color:#000
-    classDef toolClass fill:#e1bee7,stroke:#4a148c,stroke-width:2px,color:#000
-    classDef dbClass fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#000
-    classDef llmClass fill:#ffcdd2,stroke:#c62828,stroke-width:2px,color:#000
-    classDef decisionClass fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000
-    classDef endClass fill:#b2dfdb,stroke:#00695c,stroke-width:3px,color:#000
-
-    class Start,MainGraph entryClass
-    class RouterNode,SG2_Router routerClass
-    class GeneralNode,AdditionalNode,ImageNode,FileNode nodeClass
-    class SubGraph1,SubGraph2 subgraphClass
-    class SG1_Cypher,SG1_Predefined,SG1_GraphRAG,SG1_Text2SQL,SG2_LocalSearch,SG2_ExternalSearch toolClass
-    class SG2_PG,SG2_Milvus dbClass
-    class SG1_Planner,SG1_ToolSelection,SG1_Summarize,SG1_FinalAnswer,SG2_Finalize,SG2_RerankProcess llmClass
-    class RouteDecision,SG1_GuardCheck,SG1_ToolDecision,SG2_GuardCheck,SG2_RouteCheck,SG2_Reranker,SG2_ResultCheck decisionClass
-    class End,SG1_End,SG2_End endClass
-```
+## Agent 工作流详解
 
 #### 核心流程说明
 
