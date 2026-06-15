@@ -1,0 +1,23 @@
+# Prompt 评测用例 — 人工标注空白模板
+# 复制本文件为 cases/custom/my_suite.jsonl 后填写
+
+{"case_id": "TEMPLATE-001", "layer": "L0_router", "priority": "P1", "description": "【填写】用例说明", "input": {"message": "【用户问题】", "history": [], "image_path": null, "file_path": null, "session_id": "eval_template_001", "config_overrides": {}}, "expected": {"router_type": "graphrag-query", "node": "create_research_plan", "guardrails_decision": null, "kb_route": null, "kb_tools": [], "tools": ["predefined_cypher"], "sub_tasks": [], "cypher_template_name": null, "retrieval": {"required_sources": ["neo4j"], "min_hits": 1, "entity_must_appear_in_context": [], "cypher_must_contain": [], "sql_must_contain": [], "neo4j_record_min": 0}, "generation": {"grounded_only": true, "forbid_cooking_steps": false, "require_cooking_steps": true, "require_statistics_number": false, "empty_retrieval_behavior": "诚实说明暂无数据"}, "must_contain": [], "must_not_contain": [], "response_regex": null}, "prompt_chain": ["P00", "P12", "P13", "P14", "P17"], "data_dependencies": ["neo4j"], "negative_case": false, "tags": ["template", "custom"], "notes": "标注员 / 日期 / Prompt 版本", "eval_hints": {"acceptable_router_types": [], "semantic_match_subtasks": true, "judge_focus": ["routing", "groundedness", "completeness"]}}
+
+# --- 字段填写指南 ---
+# case_id     : 唯一 ID，建议 PREFIX-三位数字
+# layer       : 见 docs/prompt_eval/PROMPT_EVAL_FRAMEWORK.md §4
+# input.message : 必填
+# expected.router_type : general-query | additional-query | kb-query | graphrag-query | text2sql-query | image-query | file-query
+# prompt_chain: P00-P22，见框架文档 §2 注册表
+# must_contain / must_not_contain : 子串检查（E2E 自动化）
+# negative_case: true = 期望拒答/空检索/降级
+# eval_hints.acceptable_router_types : 允许多个正确路由时填写
+
+# --- 混淆对速查（务必覆盖）---
+# CP01 红烧肉怎么做 → graphrag | 红烧肉历史 → kb
+# CP02 有多少川菜 → text2sql | 川菜代表菜 → graphrag
+# CP03 蔬菜何时传入 → kb | 西兰花多少克 → graphrag
+# CP04 这个菜怎么做 → additional | 宫保鸡丁怎么做 → graphrag
+
+# --- 人工评分表（可选，不写入 JSONL 时可放 Excel）---
+# | case_id | route_ok | guard_ok | tool_ok | retrieval_ok | groundedness_0_1 | style_1_5 | overall_1_5 | annotator | date |

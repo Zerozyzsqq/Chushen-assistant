@@ -1,0 +1,175 @@
+# GustoBot Prompt 评测 Rubrics
+# 用于人工标注或自动化 checklist；score 均为 0-1 或 1-5
+
+version: "1.0.0"
+project: GustoBot
+
+layers:
+  L0_router:
+    weight: 0.20
+    metrics:
+      - name: route_accuracy
+        type: classification
+        pass_threshold: 0.90
+    rubric:
+      - id: R01
+        criterion: "路由类型与问题意图一致"
+        scoring: "1=正确 0=错误"
+      - id: R02
+        criterion: "统计类问题必须为 text2sql-query"
+        scoring: "含 多少/统计/排名 → text2sql"
+      - id: R03
+        criterion: "做法类必须为 graphrag-query"
+        scoring: "含 怎么做/步骤/食材 → graphrag"
+      - id: R04
+        criterion: "典故/传入史必须为 kb-query"
+        scoring: "含 历史/典故/何时传入 → kb"
+
+  L1_guardrails:
+    weight: 0.10
+    metrics:
+      - name: false_reject_rate
+        pass_threshold_max: 0.05
+      - name: false_accept_rate
+        pass_threshold_max: 0.05
+    rubric:
+      - id: G01
+        criterion: "菜谱范围内不应拒答"
+      - id: G02
+        criterion: "明显无关应拒答"
+      - id: G03
+        criterion: "KB 不应接受纯做法问句"
+      - id: G04
+        criterion: "图谱不应接受纯政治娱乐"
+
+  L2_sub_router:
+    weight: 0.15
+    metrics:
+      - name: tool_selection_f1
+        pass_threshold: 0.85
+      - name: kb_postgres_first_rate
+        pass_threshold: 0.95
+    rubric:
+      - id: S01
+        criterion: "KB 默认 postgres+milvus 且 PG 优先"
+      - id: S02
+        criterion: "做法题优先 predefined_cypher"
+      - id: S03
+        criterion: "统计题选 text2sql_query"
+      - id: S04
+        criterion: "技巧/判断题可选 LightRAG"
+
+  L3_query_gen:
+    weight: 0.15
+    metrics:
+      - name: cypher_exec_success_rate
+        pass_threshold: 0.80
+      - name: sql_exec_success_rate
+        pass_threshold: 0.85
+    rubric:
+      - id: Q01
+        criterion: "Cypher 仅 MATCH/WITH 开头"
+      - id: Q02
+        criterion: "使用参数化而非硬编码"
+      - id: Q03
+        criterion: "SQL 只读 SELECT"
+      - id: Q04
+        criterion: "Planner 子任务无重复依赖"
+
+  L4_retrieval:
+    weight: 0.15
+    metrics:
+      - name: recall_at_5
+        pass_threshold: 0.70
+      - name: context_non_empty_rate
+        pass_threshold: 0.85
+    rubric:
+      - id: V01
+        criterion: "gold 实体出现在 context"
+      - id: V02
+        criterion: "PG 有结果时不应多余查 Milvus"
+      - id: V03
+        criterion: "Neo4j 做法查询 record>=1"
+
+  L5_generation:
+    weight: 0.20
+    metrics:
+      - name: groundedness
+        pass_threshold: 0.85
+      - name: constraint_violation_rate
+        pass_threshold_max: 0.08
+    rubric:
+      - id: A01
+        criterion: "仅基于 context，无编造"
+      - id: A02
+        criterion: "KB 无具体步骤/用量"
+      - id: A03
+        criterion: "graphrag 有步骤或食材信息"
+      - id: A04
+        criterion: "空检索有诚实 fallback"
+      - id: A05
+        criterion: "语气符合下厨房/厨友风格"
+
+  E2E:
+    weight: 1.0
+    metrics:
+      - name: overall_judge_score
+        pass_threshold: 4.0
+        scale: 1-5
+    rubric:
+      - id: E01
+        criterion: "用户问题得到直接回答"
+      - id: E02
+        criterion: "无安全事故/越界内容"
+      - id: E03
+        criterion: "延迟在路由 SLA 内"
+
+confusion_pairs:
+  - id: CP01
+    name: graphrag_vs_kb
+    examples:
+      - { q: "红烧肉怎么做", expect: graphrag-query }
+      - { q: "红烧肉的历史典故", expect: kb-query }
+  - id: CP02
+    name: text2sql_vs_graphrag
+    examples:
+      - { q: "有多少道川菜", expect: text2sql-query }
+      - { q: "川菜有哪些代表菜", expect: graphrag-query }
+  - id: CP03
+    name: kb_vs_graphrag_ingredient
+    examples:
+      - { q: "蔬菜何时传入中国", expect: kb-query }
+      - { q: "西兰花需要多少克", expect: graphrag-query }
+  - id: CP04
+    name: additional_vs_graphrag
+    examples:
+      - { q: "这个菜怎么做", expect: additional-query }
+      - { q: "宫保鸡丁怎么做", expect: graphrag-query }
+
+route_sla_seconds:
+  general-query: 2
+  additional-query: 3
+  kb-query: 8
+  graphrag-query: 12
+  text2sql-query: 6
+  image-query: 20
+  file-query: 10
+
+generation_constraints_by_route:
+  kb-query:
+    grounded_only: true
+    forbid_cooking_steps: true
+    forbid_medical_claims: true
+    empty_phrase_hint: "菜谱文化知识库暂未找到"
+  graphrag-query:
+    grounded_only: true
+    require_cooking_steps: true
+    forbid_medical_claims: true
+  text2sql-query:
+    grounded_only: true
+    require_statistics_number: true
+  general-query:
+    grounded_only: false
+  additional-query:
+    max_length_chars: 80
+    must_ask_clarifying_question: true

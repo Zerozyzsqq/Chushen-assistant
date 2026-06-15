@@ -1,0 +1,1488 @@
+{
+  "summary": {
+    "total": 70,
+    "passed": 61,
+    "failed": 9,
+    "pass_rate": 0.8714,
+    "by_layer": {
+      "E2E": {
+        "total": 10,
+        "passed": 7
+      },
+      "L0_router": {
+        "total": 20,
+        "passed": 17
+      },
+      "L1_guardrails_additional": {
+        "total": 3,
+        "passed": 2
+      },
+      "L1_guardrails_kb": {
+        "total": 4,
+        "passed": 4
+      },
+      "L1_guardrails_kg": {
+        "total": 4,
+        "passed": 4
+      },
+      "L2_kb_router": {
+        "total": 5,
+        "passed": 5
+      },
+      "L2_tool_selection": {
+        "total": 8,
+        "passed": 8
+      },
+      "L3_planner": {
+        "total": 3,
+        "passed": 3
+      },
+      "L3_text2cypher": {
+        "total": 2,
+        "passed": 2
+      },
+      "L3_text2sql": {
+        "total": 3,
+        "passed": 3
+      },
+      "L5_generation_kb": {
+        "total": 4,
+        "passed": 3
+      },
+      "L5_generation_summarize": {
+        "total": 2,
+        "passed": 2
+      },
+      "L5_generation_general": {
+        "total": 2,
+        "passed": 1
+      }
+    }
+  },
+  "results": [
+    {
+      "case_id": "E2E-GEN-001",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true,
+        "must_not_contain:知识库": true,
+        "must_not_contain:Cypher": true,
+        "must_not_contain:SQL": true
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "general-query",
+        "must_not_contain": [
+          "知识库",
+          "Cypher",
+          "SQL"
+        ]
+      },
+      "error": null,
+      "latency_ms": 5817.4,
+      "response_preview": "亲～早上好呀！☀️  \n感谢您的问候，开启元气满满的一天吧～😊  \n\n如果您今天打算下厨，或者对某道菜的做法、食材搭配、营养小贴士有任何疑问，随时告诉我哦！我在这儿 ready to help～🍳🥣  \n\n祝您晨光美好，胃口大开！"
+    },
+    {
+      "case_id": "E2E-GR-001",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true,
+        "must_contain:香肠": true,
+        "must_contain:菜干": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query",
+        "tools": [
+          "predefined_cypher"
+        ],
+        "must_contain": [
+          "香肠",
+          "菜干"
+        ],
+        "generation": {
+          "grounded_only": true,
+          "require_cooking_steps": true
+        }
+      },
+      "error": null,
+      "latency_ms": 13326.6,
+      "response_preview": "### 数据统计\n香肠炒菜干的制作步骤是什么：\n1. 准备的食材\n2. 香肉肠切片\n3. 爆香蒜末、豆豉\n4. 倒入香肉肠，中火翻炒\n5. 炒两分钟后倒入菜干翻炒\n6. 加入酱油、蚝油调味，再加入葱段\n7. 炒均匀即可出锅\n8. 成品"
+    },
+    {
+      "case_id": "E2E-KB-001",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true,
+        "must_contain:宫保": true,
+        "must_not_contain:第一步": true,
+        "must_not_contain:大火": true,
+        "must_not_contain:转小火": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query",
+        "kb_tools": [
+          "postgres",
+          "milvus"
+        ],
+        "must_contain": [
+          "宫保"
+        ],
+        "must_not_contain": [
+          "第一步",
+          "大火",
+          "转小火"
+        ],
+        "generation": {
+          "forbid_cooking_steps": true
+        }
+      },
+      "error": null,
+      "latency_ms": 15749.2,
+      "response_preview": "宫保鸡丁是一道具有深厚历史背景的经典川菜，其起源可追溯至清代。据记载，这道菜由时任四川总督的丁宝桢所创。丁宝桢为晚清名臣，官至太子少保，这一职位在当时俗称“宫保”，因此他被尊称为“丁宫保”。\n\n丁宝桢本人喜爱美食，尤其偏好辣味菜肴。据传他在四川任职期间，命家厨以鸡肉为主料，结合当地喜用的辣椒和花椒等调料，创制出一道香辣鲜嫩的鸡丁菜肴。后来，这道菜因其独特风味广受欢迎，并以其官衔“宫保”命名，称为“宫保鸡丁”。\n\n值得注意的是，虽然宫保鸡丁如今被视为川菜代表之一，但丁宝桢原籍贵州，也有说法认为该菜融合了贵州与四川两地的烹饪特色。无论如何，宫保鸡丁凭借其“糊辣荔枝味型”（即辣中带甜、略带酸味）的独"
+    },
+    {
+      "case_id": "E2E-KB-002",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true,
+        "must_not_contain:具体步骤": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query",
+        "must_not_contain": [
+          "具体步骤"
+        ]
+      },
+      "error": null,
+      "latency_ms": 32331.5,
+      "response_preview": "蔬菜传入中国的历史悠久，且随着中外交流的不断深入而持续丰富。根据现有资料，可以按朝代梳理如下：\n\n---\n\n### **先秦至汉代：本土蔬菜为主，初步引入外来品种**\n早在先秦时期，中国人已广泛食用多种本土蔬菜，如：\n- 莕菜、莼菜、蒌蒿、青菜（非现代大白菜）、葫芦、萝卜、荠菜、水芹、笋、莲藕、芥菜、小蒜、芜菁、甜瓜、芋艿等。\n  \n到了**汉代**，随着张骞出使西域，开启了大规模引进外来作物的序幕。他从西域带回了包括以下在内的蔬菜和香料：\n- **黄瓜**（当时称“胡瓜”）\n- **大蒜**\n- **芫荽**（香菜）\n- **苜蓿**\n- **蚕豆**\n- **芝麻**（有争议）\n- **茄"
+    },
+    {
+      "case_id": "E2E-SQL-001",
+      "layer": "E2E",
+      "passed": false,
+      "checks": {
+        "router_type": true,
+        "must_contain:道": false,
+        "must_contain:菜": true
+      },
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "text2sql-query",
+        "tools": [
+          "text2sql_query"
+        ],
+        "generation": {
+          "require_statistics_number": true
+        },
+        "must_contain": [
+          "道",
+          "菜"
+        ]
+      },
+      "error": null,
+      "latency_ms": 14074.4,
+      "response_preview": "### 数据统计\n数据库中收录的菜品总数是多少：### 查询结果摘要\n问题：数据库中收录的菜品总数是多少\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n查询数据库中收录的菜品总数\n\n### 2. 涉及的表\n- recipes\n\n### 3. 关键字段\n- id\n\n### 6. 聚合需求\nCOUNT(*) 统计 recipes 表中的记录总数\n\n---\n### 结果预览\n```json\n[\n  {\n    \"total_recipes\": 70\n  }\n]\n```\n\n---\n### 可视化建议\n- 类型：table\n- 标题：菜品总数统计\n\n数据库中收录的菜品总数是多少：\nt"
+    },
+    {
+      "case_id": "E2E-ADD-001",
+      "layer": "E2E",
+      "passed": false,
+      "checks": {
+        "router_type": false
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query",
+        "guardrails_decision": "end"
+      },
+      "error": null,
+      "latency_ms": 6380.8,
+      "response_preview": "亲～感谢您的咨询～😊  \n不过呢，我这边主要帮您解答菜谱、食材、烹饪相关的问题哦！关于天气情况，建议您可以查看手机上的天气应用查看当地实时天气，或者问问智能语音助手（比如 Siri、小爱同学等）会更准确呢～🌤️\n\n如果您今天想根据天气做点合适的美食，比如下雨天来碗热汤、晴天做个清爽沙拉之类的，我很乐意为您推荐菜谱哦！🍲🥗\n\n随时欢迎继续问我～"
+    },
+    {
+      "case_id": "E2E-ADD-002",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query",
+        "guardrails_decision": "proceed"
+      },
+      "error": null,
+      "latency_ms": 4436.9,
+      "response_preview": "厨友，您指的是哪道菜呀？😊"
+    },
+    {
+      "case_id": "E2E-ING-001",
+      "layer": "E2E",
+      "passed": false,
+      "checks": {
+        "router_type": true,
+        "must_contain:鸡": true,
+        "must_contain:花生": false
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query",
+        "must_contain": [
+          "鸡",
+          "花生"
+        ]
+      },
+      "error": null,
+      "latency_ms": 23493.3,
+      "response_preview": "### 川菜概览\n根据提供的知识库内容，**没有关于“宫保鸡丁”所需食材的信息**。知识库中列出的菜肴包括梅菜扣肉、泡椒炒长腿蛸、豆豉牛筋炒青椒、豆腐烧大白菜等，但并未提及宫保鸡丁及其相关食材。\n\n因此，基于当前上下文，**无法回答宫保鸡丁需要哪些食材**。\n\n### References"
+    },
+    {
+      "case_id": "E2E-TECH-001",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query"
+      },
+      "error": null,
+      "latency_ms": 40193.0,
+      "response_preview": "No data to summarize."
+    },
+    {
+      "case_id": "E2E-MT-001",
+      "layer": "E2E",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query"
+      },
+      "error": null,
+      "latency_ms": 4792.6,
+      "response_preview": "问题表述不明确，缺少具体对象（如菜品、食材或饮食文化相关主题），无法判断是否属于中华饮食文化史范畴。"
+    },
+    {
+      "case_id": "ROUTER-001",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "general-query",
+        "node": "respond_to_general_query"
+      },
+      "error": null,
+      "latency_ms": 3830.7,
+      "response_preview": "亲～你好呀！👋  \n很高兴见到你！😊  \n\n是想查菜谱、学做菜，还是有其他关于美食的问题呢？随时告诉我哦～🍲"
+    },
+    {
+      "case_id": "ROUTER-002",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "general-query"
+      },
+      "error": null,
+      "latency_ms": 4956.7,
+      "response_preview": "亲～不客气呀！😊  \n有你这么暖心的厨友，是我们最大的幸福～💕  \n如果以后在做饭、找菜谱或者搭配食材上有任何问题，随时来找我哦！👋  \n\n祝你今天下厨愉快，饭菜香喷喷～🍲✨"
+    },
+    {
+      "case_id": "ROUTER-003",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query",
+        "node": "get_additional_info"
+      },
+      "error": null,
+      "latency_ms": 3748.4,
+      "response_preview": "厨友想做什么菜呀？😊"
+    },
+    {
+      "case_id": "ROUTER-004",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query"
+      },
+      "error": null,
+      "latency_ms": 4361.8,
+      "response_preview": "厨友，您说的是哪道菜呀？😊"
+    },
+    {
+      "case_id": "ROUTER-005",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query",
+        "node": "create_research_plan"
+      },
+      "error": null,
+      "latency_ms": 9927.9,
+      "response_preview": "### 数据统计\n香肠炒菜干的制作步骤是什么：\n1. 准备的食材\n2. 香肉肠切片\n3. 爆香蒜末、豆豉\n4. 倒入香肉肠，中火翻炒\n5. 炒两分钟后倒入菜干翻炒\n6. 加入酱油、蚝油调味，再加入葱段\n7. 炒均匀即可出锅\n8. 成品"
+    },
+    {
+      "case_id": "ROUTER-006",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query"
+      },
+      "error": null,
+      "latency_ms": 9269.4,
+      "response_preview": "### 数据统计\n宫保鸡丁需要哪些主料和辅料：\n1. 主食材：淀粉, 用量：适量\n2. 主食材：花椒, 用量：适量\n3. 主食材：干辣椒, 用量：适量\n4. 主食材：生姜, 用量：适量\n5. 主食材：大蒜, 用量：适量\n6. 主食材：大葱, 用量：适量\n7. 主食材：花生米, 用量：适量\n8. 主食材：鸡腿, 用量：3个"
+    },
+    {
+      "case_id": "ROUTER-007",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query"
+      },
+      "error": null,
+      "latency_ms": 21993.7,
+      "response_preview": "No data to summarize."
+    },
+    {
+      "case_id": "ROUTER-008",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query",
+        "node": "create_kb_query"
+      },
+      "error": null,
+      "latency_ms": 14520.0,
+      "response_preview": "宫保鸡丁是一道具有深厚历史背景的经典川菜，其起源可追溯至清代。据记载，这道菜由时任四川总督的丁宝桢所创。丁宝桢为晚清名臣，官至太子少保，这一职位在当时被称为“宫保”，因此他被人尊称为“丁宫保”。\n\n丁宝桢本人喜爱美食，尤其偏好辣味菜肴。据传他在四川任职期间，命家厨将鸡肉切丁，配以花生、辣椒等食材炒制，口味鲜香麻辣、略带酸甜，深得其喜爱。后来，这道菜便以其官衔“宫保”命名，称为“宫保鸡丁”，并在民间广为流传，逐渐成为川菜中的代表性菜品之一。\n\n值得注意的是，虽然宫保鸡丁如今在全国乃至海外中餐馆中极为常见，但其正宗做法和风味仍以四川本地最为地道，强调“糊辣荔枝味”——即辣中带甜、甜中透酸的独特复合"
+    },
+    {
+      "case_id": "ROUTER-009",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query"
+      },
+      "error": null,
+      "latency_ms": 33683.9,
+      "response_preview": "蔬菜传入中国的历史悠久，且随着中外交流的不断深入而持续丰富。根据现有资料，可以大致按朝代梳理如下：\n\n---\n\n### **先秦至汉代：本土蔬菜为主，初步引进西域品种**\n在秦及以前，中国人主要食用本土生长的蔬菜，如：\n- 莕菜、莼菜、蒌蒿、青菜（非现代大白菜）、葫芦、萝卜、荠菜、黄花菜、水芹、笋、莲藕、芥菜、小蒜、芜菁、甜瓜、菱角、芋艿等。\n- 此外还包括一些如今较少食用的种类，如冬葵（冬寒菜）、蒲菜、苦苣菜、水蓼、款冬等。\n\n**汉代**是一个重要的转折点。张骞出使西域后，带回了多种外来蔬菜和作物，包括：\n- 黄瓜（当时称“胡瓜”）\n- 胡荽（香菜）\n- 大蒜\n- 芫荽\n- 胡麻（芝麻，有"
+    },
+    {
+      "case_id": "ROUTER-010",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query"
+      },
+      "error": null,
+      "latency_ms": 15035.3,
+      "response_preview": "胡萝卜之所以叫“胡萝卜”，与其传入中国的历史密切相关。\n\n在中国古代，“胡”字常用来指代北方或西域的外族，如匈奴、突厥等。许多从这些地区传入中原的物产，往往冠以“胡”字，例如胡椒、胡桃（即核桃）、胡瓜（即黄瓜）等。胡萝卜原产于中亚地区（今阿富汗一带），大约在汉代或稍晚时期经由丝绸之路传入中国。因其来自“胡地”，且外形与本土的白萝卜相似，故得名“胡萝卜”。\n\n需要注意的是，胡萝卜与中国本土的白萝卜并无亲缘关系——白萝卜属于十字花科，而胡萝卜属于伞形科。只是古人因其形态类似，加上来源地标识，才将其命名为“胡萝卜”。\n\n这一命名方式也反映了中国古代对外来作物的命名习惯：  \n- **“胡”**：多指"
+    },
+    {
+      "case_id": "ROUTER-011",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "text2sql-query"
+      },
+      "error": null,
+      "latency_ms": 12612.9,
+      "response_preview": "### 数据统计\n数据库中收录的菜品总数是多少：### 查询结果摘要\n问题：数据库中收录的菜品总数是多少\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n查询数据库中收录的菜品总数\n\n### 2. 涉及的表\n- recipes\n\n### 3. 关键字段\n- id\n\n### 6. 聚合需求\nCOUNT(*) 统计 recipes 表中的记录总数\n\n---\n### 结果预览\n```json\n[\n  {\n    \"total_recipes\": 70\n  }\n]\n```\n\n---\n### 可视化建议\n- 类型：table\n- 标题：菜品总数统计\n\n数据库中收录的菜品总数是多少：\nt"
+    },
+    {
+      "case_id": "ROUTER-012",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "text2sql-query"
+      },
+      "error": null,
+      "latency_ms": 14227.3,
+      "response_preview": "### 数据统计\n统计各菜系包含的菜谱数量，找出菜谱最多的菜系：抱歉，执行 SQL 时出现错误：仅支持只读 SELECT 查询"
+    },
+    {
+      "case_id": "ROUTER-013",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query"
+      },
+      "error": null,
+      "latency_ms": 7504.7,
+      "response_preview": "抱歉，菜谱文化知识库暂未找到相关记载，请尝试描述得更具体一些或稍后再试。"
+    },
+    {
+      "case_id": "ROUTER-014",
+      "layer": "L0_router",
+      "passed": false,
+      "checks": {},
+      "actual": {},
+      "expected": {
+        "router_type": "graphrag-query"
+      },
+      "error": "{code: Neo.ClientError.Statement.ParameterMissing} {message: Expected parameter(s): recipe_name}",
+      "latency_ms": null,
+      "response_preview": ""
+    },
+    {
+      "case_id": "ROUTER-015",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "text2sql-query"
+      },
+      "error": null,
+      "latency_ms": 12299.4,
+      "response_preview": "### 数据统计\n统计川菜菜品的总数：### 查询结果摘要\n问题：统计川菜菜品的总数\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n统计川菜菜品的总数\n\n### 2. 涉及的表\n- recipes\n- cuisines\n\n### 3. 关键字段\n- recipes.id\n- cuisines.name\n\n### 4. 连接关系\nrecipes.cuisine_id = cuisines.id\n\n### 5. 筛选条件\ncuisines.name = '川菜'\n\n### 6. 聚合需求\nCOUNT(recipes.id)\n\n### 7. 排序要求\nNone\n\n---\n### "
+    },
+    {
+      "case_id": "ROUTER-016",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query"
+      },
+      "error": null,
+      "latency_ms": 6464.0,
+      "response_preview": "### 数据统计\n糖醋排骨的详细做法步骤是什么：\n1. 排骨洗净，冷水下锅，加料酒，葱姜，焯煮。水开后，撇净浮沫\n2. 炒糖色，适量油，小火下白糖，炒至颜色呈现可乐色并冒比较大的泡即可\n3. 下入焯好的排骨，葱姜翻炒均匀上色。加料酒，生抽，适量啤酒，醋，糖炖煮。如果不用压力锅就多放点啤酒没过食材，烧开后转中小火长时间炖煮\n4. 放入电压力锅，按排骨键\n5. 电压力锅排气，把排骨倒入炒锅大火收汁\n6. 收至汤汁浓稠，尝一下，如果酸度不够就补些醋，因为醋在炖煮过程中容易挥发\n7. 出锅装盘"
+    },
+    {
+      "case_id": "ROUTER-017",
+      "layer": "L0_router",
+      "passed": false,
+      "checks": {
+        "router_type": false
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "image-query",
+        "node": "create_image_query"
+      },
+      "error": null,
+      "latency_ms": 2657.0,
+      "response_preview": "厨友您好～抱歉哦，这个问题不太属于我们的菜谱范围呢，我主要帮您解答菜谱和烹饪方面的问题～😊"
+    },
+    {
+      "case_id": "ROUTER-018",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "image-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "image-query"
+      },
+      "error": null,
+      "latency_ms": 12988.6,
+      "response_preview": "厨友您好～😊\n\n我已经为您生成了宫保鸡丁的图片！请查看附图。\n\n这张图片展示了宫保鸡丁的经典呈现方式，色泽诱人，食材新鲜。如果您想了解这道菜的具体做法，随时告诉我～🍲\n\n祝您烹饪愉快！\n\n图片链接: https://maas-watermark-prod-new.cn-wlcb.ufileos.com/2026061301294586e4211b18a24861_watermark.png?UCloudPublicKey=TOKEN_6df395df-5d8c-4f69-90f8-a4fe46088958&Signature=MXlvlHhvkxOQbFqvhxpssOS20Pc%3D&Exp"
+    },
+    {
+      "case_id": "ROUTER-019",
+      "layer": "L0_router",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query"
+      },
+      "error": null,
+      "latency_ms": 5740.1,
+      "response_preview": "亲～感谢您的咨询～😊  \n不过呢，我这边主要帮您解答菜谱、食材、烹饪相关的问题哦！关于天气情况，建议您查看当地天气预报应用查看会更准确呢～☀️🌧️\n\n如果您今天想根据天气做点好吃的，比如下雨天想煮个暖暖的汤，或者晴天想做个清爽沙拉，我超乐意为您推荐合适的菜谱！要不要试试看呀？🍲🥗"
+    },
+    {
+      "case_id": "ROUTER-020",
+      "layer": "L0_router",
+      "passed": false,
+      "checks": {
+        "router_type": false
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "kb-query"
+      },
+      "error": null,
+      "latency_ms": 3374.2,
+      "response_preview": "厨友想了解西兰花的哪些营养呢？😊🥦"
+    },
+    {
+      "case_id": "GUARD-ADD-001",
+      "layer": "L1_guardrails_additional",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query",
+        "guardrails_decision": "proceed",
+        "node": "get_additional_info"
+      },
+      "error": null,
+      "latency_ms": 4452.7,
+      "response_preview": "厨友想做什么菜系呀？😊"
+    },
+    {
+      "case_id": "GUARD-ADD-002",
+      "layer": "L1_guardrails_additional",
+      "passed": false,
+      "checks": {
+        "router_type": false,
+        "must_not_contain:步骤": true,
+        "must_not_contain:食材": false,
+        "must_not_contain:菜谱": false
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "additional-query",
+        "guardrails_decision": "end",
+        "must_not_contain": [
+          "步骤",
+          "食材",
+          "菜谱"
+        ]
+      },
+      "error": null,
+      "latency_ms": 7844.8,
+      "response_preview": "亲～感谢您的咨询～😊  \n不过呢，我这边主要帮您解答菜谱、食材、烹饪相关的问题哦！关于天气，建议您可以查看手机上的天气应用查看当地实时天气情况，或者问问语音助手（比如 Siri、小爱同学等）会更准确哟～🌤️\n\n如果您今天打算根据天气做点美食，比如下雨天想煮碗热汤面，或者晴天想做个清爽沙拉，那我可就派上用场啦！随时告诉我您的想法～🍲🥗\n\n祝您今天心情愉快，吃得开心！"
+    },
+    {
+      "case_id": "GUARD-ADD-003",
+      "layer": "L1_guardrails_additional",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "end"
+      },
+      "error": null,
+      "latency_ms": 6012.3,
+      "response_preview": "亲～感谢您的咨询～😊  \n不过呢，我是一个专注于菜谱和烹饪的小助手哦！国际局势这类话题可能不太在我的专业范围内啦～  \n\n如果您对某道异国料理的做法感兴趣，比如“泰式冬阴功汤怎么做”或者“意大利面的正宗配方”，那我可就来劲儿了！🍜  \n\n有任何美食相关的问题，随时欢迎问我～祝您今天胃口棒棒，心情美美！👋"
+    },
+    {
+      "case_id": "GUARD-KB-001",
+      "layer": "L1_guardrails_kb",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "proceed",
+        "router_type": "kb-query"
+      },
+      "error": null,
+      "latency_ms": 13605.4,
+      "response_preview": "佛跳墙是一道著名的福建传统名菜，其由来颇具传奇色彩。据记载，佛跳墙起源于清代道光年间，由福建福州的一位官员周莲所创。相传周莲在一次宴请宾客时，其厨师别出心裁地将多种山珍（如鲍鱼、海参、鱼翅、干贝等）与海味一同放入绍兴酒坛中慢火煨炖。成菜后香气浓郁，飘散至邻舍，甚至传说连修行中的和尚闻香亦忍不住翻墙而来，故得名“佛跳墙”——意为“连佛都忍不住跳过墙来品尝”。\n\n这道菜不仅体现了闽菜讲究食材本味与精细调和的特点，也反映了清代以来福建沿海地区物产丰饶、饮食文化交融的历史背景。\n\n来源：[PostgreSQL#1]"
+    },
+    {
+      "case_id": "GUARD-KB-002",
+      "layer": "L1_guardrails_kb",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "proceed"
+      },
+      "error": null,
+      "latency_ms": 5817.0,
+      "response_preview": "抱歉，菜谱文化知识库暂未找到相关记载，请尝试描述得更具体一些或稍后再试。"
+    },
+    {
+      "case_id": "GUARD-KB-003",
+      "layer": "L1_guardrails_kb",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "end"
+      },
+      "error": null,
+      "latency_ms": 7283.8,
+      "response_preview": "### 数据统计\n红烧肉的详细烹饪步骤和各阶段火候控制是什么：\n1. 将五花肉清洗干净切成方形的小块\n2. 将五花肉块放入锅中加水，加一大勺料酒，煮沸两三分钟。这一步主要是为了去腥\n3. 关火后将煮肉的水倒掉，向锅中注入凉水，使猪肉块过一遍凉水。这一步主要是为了使肉块更加紧实，口感好\n4. 将肉块捞出，控干水分备用\n5. 锅中倒油，烧热\n6. 将肉块倒入油锅中，翻几下，煸出油脂。这一步主要是为了使肉减少油腻\n7. 将肉块捞出备用，上一步煸出来的油留着炒菜用\n8. 锅中倒入适量的植物油，下一把冰糖，中火加热\n9. 用铲子将冰糖敲碎并搅拌，加热至冰糖融化并呈焦糖色\n10. 将肉块倒入锅中快速翻炒，"
+    },
+    {
+      "case_id": "GUARD-KB-004",
+      "layer": "L1_guardrails_kb",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "end"
+      },
+      "error": null,
+      "latency_ms": 2943.4,
+      "response_preview": "厨友您好～抱歉哦，这个问题不太属于我们的菜谱范围呢，我主要帮您解答菜谱和烹饪方面的问题～😊"
+    },
+    {
+      "case_id": "GUARD-KG-001",
+      "layer": "L1_guardrails_kg",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "planner"
+      },
+      "error": null,
+      "latency_ms": 7410.8,
+      "response_preview": "### 数据统计\n麻婆豆腐的详细制作步骤是什么：\n1. 嫩豆腐切块\n2. 清水加入盐、少许植物油煮滚放入豆腐绰水\n3. 捞出来冲凉，沥干水分\n4. 植物油放入肉末炒至干香盛出来备用\n5. 放入豆瓣酱加入豆豉末、花椒炒出红油\n6. 加入清水\n7. 倒入豆腐加入老抽调色\n8. 加入肉末大火煮5分钟\n9. 水淀粉勾2次芡放入红辣椒、生抽\n10. 汤汁拌饭最好吃😋"
+    },
+    {
+      "case_id": "GUARD-KG-002",
+      "layer": "L1_guardrails_kg",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "planner"
+      },
+      "error": null,
+      "latency_ms": 14693.6,
+      "response_preview": "### 数据统计\n热菜类菜品的总数是多少：### 查询结果摘要\n问题：热菜类菜品的总数是多少\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n统计热菜类菜品的总数\n\n### 2. 涉及的表\n- recipes\n- cuisines\n\n### 3. 关键字段\n- recipes.id\n- cuisines.name\n\n### 4. 连接关系\nrecipes.cuisine_id = cuisines.id\n\n### 5. 筛选条件\ncuisines.name = '热菜'\n\n### 6. 聚合需求\nCOUNT(recipes.id)\n\n---\n### 结果预览\n```json\n"
+    },
+    {
+      "case_id": "GUARD-KG-003",
+      "layer": "L1_guardrails_kg",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "end"
+      },
+      "error": null,
+      "latency_ms": 2828.4,
+      "response_preview": "厨友您好～抱歉哦，这个问题不太属于我们的菜谱范围呢，我主要帮您解答菜谱和烹饪方面的问题～😊"
+    },
+    {
+      "case_id": "GUARD-KG-004",
+      "layer": "L1_guardrails_kg",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "guardrails_decision": "planner"
+      },
+      "error": null,
+      "latency_ms": 6675.4,
+      "response_preview": "### 数据统计\n鱼香肉丝的详细做法步骤是什么：\n1. 把瘦肉切成2cm长的肉丝，加入料酒、盐、味精和水淀粉上浆！\n2. 把剩余的水淀粉加入料酒、生抽、醋、盐、白糖、味精调成芡汁备用！\n3. 把木耳泡软洗净也切成肉丝一样大!\n4. 把青辣椒洗净去籽也切成肉丝大小！\n5. 把泡辣椒切碎，葱姜蒜切末备用！\n6. 打开电磁炉放上炒锅加入适量的植物油，待油烧热放入肉丝炒散加适量的老抽上色！\n7. 等肉丝炒变色，再加入泡辣椒、姜蒜一起翻炒入味！\n8. 待肉丝快熟了加入青辣椒！\n9. 加入青辣椒后翻炒几下，再加入木耳、葱花一起翻炒！\n10. 最后加入芡汁翻炒均匀就可以出锅啦！\n11. 如果你是和其他人一起"
+    },
+    {
+      "case_id": "KB-ROUTER-001",
+      "layer": "L2_kb_router",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "kb_route": "local",
+        "kb_tools": [
+          "postgres",
+          "milvus"
+        ]
+      },
+      "error": null,
+      "latency_ms": 13181.7,
+      "response_preview": "宫保鸡丁是一道具有深厚历史背景的经典川菜，其起源可追溯至清代。据记载，这道菜由时任四川总督的丁宝桢所创。丁宝桢为晚清名臣，官至太子少保，这一职位在当时被尊称为“宫保”。他本人喜爱辣味菜肴，尤其钟爱以鸡肉、花生和辣椒等食材烹制的鸡丁。其家厨根据他的口味偏好创制了这道菜，并以其官衔“宫保”命名，称为“宫保鸡丁”。\n\n此菜后来逐渐从官府流传至民间，并在川菜体系中不断演变，成为代表性的辣味炒菜之一。如今，宫保鸡丁不仅在中国广受欢迎，也在海外中餐馆中占据重要地位，被视为中华料理的标志性菜品之一。\n\n来源：[PostgreSQL#1]"
+    },
+    {
+      "case_id": "KB-ROUTER-002",
+      "layer": "L2_kb_router",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "kb_route": "local",
+        "kb_tools": [
+          "postgres"
+        ]
+      },
+      "error": null,
+      "latency_ms": 13780.1,
+      "response_preview": "宫保鸡丁属于**川菜**（四川菜系）。\n\n这道菜起源于清代，由时任四川总督的丁宝桢所创。丁宝桢官至“太子少保”，这一职位俗称“宫保”，因此这道他喜爱的辣味鸡丁菜肴便被命名为“宫保鸡丁”。该菜融合了麻辣鲜香的川菜特色，后来不仅在四川广为流传，也成为全国乃至海外中餐馆中最知名的中国菜之一。\n\n来源：[PostgreSQL#1]"
+    },
+    {
+      "case_id": "KB-ROUTER-003",
+      "layer": "L2_kb_router",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "kb_route": "local",
+        "kb_tools": [
+          "milvus"
+        ]
+      },
+      "error": null,
+      "latency_ms": 5835.6,
+      "response_preview": "抱歉，菜谱文化知识库暂未找到相关记载，请尝试描述得更具体一些或稍后再试。"
+    },
+    {
+      "case_id": "KB-ROUTER-004",
+      "layer": "L2_kb_router",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "kb_route": "local",
+        "kb_tools": [
+          "postgres",
+          "milvus"
+        ]
+      },
+      "error": null,
+      "latency_ms": 28026.1,
+      "response_preview": "中国古代通过丝绸之路等对外交流渠道，从西域（广义上包括中亚、西亚乃至更远地区）引进了不少蔬菜。这些外来蔬菜往往在名称上带有“胡”“番”“洋”等字眼，反映出其异域来源。根据你提供的检索资料，以下是一些明确记载为**从西域传入**的古代蔬菜：\n\n---\n\n### 一、汉代张骞通西域后引入的主要蔬菜（部分有争议，但传统认为由张骞带回）：\n- **胡瓜**：即今天的**黄瓜**，原产印度，经西域传入。\n- **大蒜**：原产中亚或西亚，古称“胡蒜”。\n- **芫荽**（香菜）：原产地中海沿岸及中亚，汉代传入。\n- **苜蓿**（紫花苜蓿）：最初作为马饲料引入，嫩叶也可食。\n- **蚕豆**：有说法认为"
+    },
+    {
+      "case_id": "KB-ROUTER-005",
+      "layer": "L2_kb_router",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "kb_route": "local",
+        "kb_tools": [
+          "postgres",
+          "milvus"
+        ]
+      },
+      "error": null,
+      "latency_ms": 15974.0,
+      "response_preview": "铁锅在中国饮食文化与烹饪技术的发展中扮演了极为重要的角色，其历史可追溯至春秋战国时期。\n\n据史料记载，**铁锅最早出现在春秋战国时期**，但由于当时铁矿资源稀缺、冶炼技术尚不成熟，铁器极为珍贵，铁锅难以普及，仅限于少数贵族或特殊用途。一直到**唐朝**，考古发现仍以三足铜锅为主，说明铁锅尚未完全取代青铜炊具。\n\n真正的转折点发生在**宋朝**。随着冶铁技术的进步和铁产量的大幅提升，铁制器具开始广泛进入百姓日常生活，**铁锅也逐渐成为民间主流的烹饪工具**。这不仅降低了炊具成本，还推动了煎、炒、炸等高温快熟烹饪方式的发展，深刻影响了中国菜系的形成。\n\n到了**明清时期**，熟铁锅（又称精铁锅）开"
+    },
+    {
+      "case_id": "TOOL-001",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "graphrag-query",
+        "tools": [
+          "predefined_cypher"
+        ],
+        "cypher_template_name": "dish_instructions"
+      },
+      "error": null,
+      "latency_ms": 16891.0,
+      "response_preview": "### 川菜概览\n根据当前提供的知识库内容，**没有关于“红烧肉”（Braised Pork Belly / Hong Shao Rou）的具体制作步骤或所需食材的详细信息**。\n\n知识库中提到了几道与“红烧”相关的菜肴，例如：\n- **红烧排骨卤蛋**（Red-Braised Pork Ribs with Braised Eggs）：使用猪肋排和鸡蛋，以酱油为基础的卤汁炖煮。\n- **红烧豆腐**（Hong Shao Dou Fu）：用豆腐、酱油、糖等调料红烧而成。\n- **红烧海鲈鱼**（Hong Shao Hai Lu Yu / Braised Sea Bass）：以海鲈鱼为主料，采用中"
+    },
+    {
+      "case_id": "TOOL-002",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "tools": [
+          "predefined_cypher"
+        ],
+        "cypher_template_name": "ingredients_of_dish"
+      },
+      "error": null,
+      "latency_ms": 7963.3,
+      "response_preview": "### 数据统计\n宫保鸡丁的主辅料有哪些：\n  食盐：适量\n  白砂糖：适量\n  生抽：适量\n  白醋：少许\n  老抽：少许\n★ 淀粉：适量\n★ 花椒：适量\n★ 干辣椒：适量\n★ 生姜：适量\n★ 大蒜：适量\n★ 大葱：适量\n★ 花生米：适量\n★ 鸡腿：3个"
+    },
+    {
+      "case_id": "TOOL-003",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {
+        "router_type": true
+      },
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "router_type": "text2sql-query",
+        "tools": [
+          "text2sql_query"
+        ]
+      },
+      "error": null,
+      "latency_ms": 11395.4,
+      "response_preview": "### 数据统计\n数据库中收录的菜品总数是多少：### 查询结果摘要\n问题：数据库中收录的菜品总数是多少\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n查询数据库中收录的菜品总数\n\n### 2. 涉及的表\n- recipes\n\n### 3. 关键字段\n- id\n\n### 6. 聚合需求\nCOUNT(*) AS total_recipes\n\n---\n### 结果预览\n```json\n[\n  {\n    \"total_recipes\": 70\n  }\n]\n```\n\n---\n### 可视化建议\n- 类型：table\n- 标题：菜品总数统计\n\n数据库中收录的菜品总数是多少：\ntot"
+    },
+    {
+      "case_id": "TOOL-004",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "tools": [
+          "cypher_query"
+        ]
+      },
+      "error": null,
+      "latency_ms": 17355.0,
+      "response_preview": "### 川菜概览\n根据提供的知识库信息，目前**没有菜品同时满足“使用五花肉”、“麻辣口味”和“热菜”这三个条件**。\n\n以下是相关分析：\n\n- **使用五花肉（Pork Belly）的菜品**包括：\n  - **梅菜扣肉（Mei Cai Kou Rou）**：由五花肉和梅干菜制成，属于传统中式热菜，但其口味为咸鲜，非麻辣。\n  - **芋头扣肉（Taro Pork Belly）**：由五花肉和芋头蒸制而成，也属热菜，但同样不属于麻辣口味。\n\n- **麻辣口味的菜品**包括：\n  - **辣炒平菇（La Chao Ping Gu）**：以辣味为主，是热菜，但主料为平菇，不含五花肉。\n  - *"
+    },
+    {
+      "case_id": "TOOL-005",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "tools": [
+          "microsoft_graphrag_query"
+        ]
+      },
+      "error": null,
+      "latency_ms": 18042.7,
+      "response_preview": "### 川菜概览\n根据当前提供的**Context**信息，知识图谱和文档片段中提到了多个与“红烧”相关的菜肴（如红烧豆腐、红烧排骨卤蛋、红烧海鲈鱼），也提到了“Braised Pork”（烧肉/ braised pork）作为“土豆丝炒烧肉”这道菜的组成部分，但**并未具体说明“红烧肉”（通常指红烧五花肉）发柴的原因或改进方法**。\n\n此外，“红烧肉发柴”这一问题涉及烹饪技巧、火候控制、选材及处理方式等细节，而这些内容在所提供的上下文中**没有相关描述或解释**。\n\n因此，基于现有资料，**无法回答红烧肉发柴的常见原因及对应的改进方法**。\n\n### References\n\n（无相关参考文献"
+    },
+    {
+      "case_id": "TOOL-006",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "tools": [
+          "text2sql_query",
+          "cypher_query"
+        ]
+      },
+      "error": null,
+      "latency_ms": 15313.6,
+      "response_preview": "### 川菜概览\n根据提供的知识库信息，**没有明确标注为“麻辣口味”的菜品**。虽然部分菜品含有辣椒或具有“辣”的描述（如“辣炒平菇”、“Spicy Fried Eggs”、“Paojiao Fried Long-Legged Octopus”），但“麻辣”特指同时具备“麻”（通常来自花椒）和“辣”（来自辣椒）的复合味型，而当前上下文中**没有任何一道菜同时提及花椒（Sichuan pepper）与辣椒作为调味料**。\n\n例如：\n- **Sichuan Pepper Roast Duck Legs（椒盐烤鸭腿）** 使用了花椒（Sichuan pepper），但未提及辣椒，且烹饪方式为烤制，"
+    },
+    {
+      "case_id": "TOOL-007",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "tools": [
+          "predefined_cypher"
+        ],
+        "cypher_template_name": "cooking_steps"
+      },
+      "error": null,
+      "latency_ms": 10122.1,
+      "response_preview": "### 数据统计\n香肠炒菜干的详细烹饪步骤是什么：\n1. 准备的食材\n2. 香肉肠切片\n3. 爆香蒜末、豆豉\n4. 倒入香肉肠，中火翻炒\n5. 炒两分钟后倒入菜干翻炒\n6. 加入酱油、蚝油调味，再加入葱段\n7. 炒均匀即可出锅\n8. 成品"
+    },
+    {
+      "case_id": "TOOL-008",
+      "layer": "L2_tool_selection",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "tools": [
+          "text2sql_query"
+        ]
+      },
+      "error": null,
+      "latency_ms": 19171.8,
+      "response_preview": "### 川菜概览\n在提供的菜谱知识图谱中，并未明确标注每道菜品的“口味类型”（如酸辣、咸鲜、香辣等）这一结构化属性。虽然部分菜品名称或描述中隐含了口味信息（例如“Suan La Ou Dai (Sour and Spicy Lotus Root Strips)”明确为“酸辣”，“Spicy Fried Eggs”含有“辣”），但这些信息并未以统一的“口味类型”字段进行归类，也缺乏完整的覆盖。\n\n因此，基于当前知识图谱的数据结构，**无法准确统计每种口味类型的菜品数量**，因为：\n\n- 没有独立的“口味”实体或属性与菜品系统关联；\n- 仅少数菜品通过名称或描述间接体现口味（如“酸辣藕带”、“辣椒"
+    },
+    {
+      "case_id": "PLAN-001",
+      "layer": "L3_planner",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "sub_tasks": [
+          "香菇的营养档案与健康功效是什么"
+        ]
+      },
+      "error": null,
+      "latency_ms": 14936.6,
+      "response_preview": "### 川菜概览\n根据当前提供的知识库内容，**没有关于香菇（Shiitake mushroom）的营养档案或健康功效的信息**。知识库中提及的蘑菇类食材包括**木耳（Wood Ear Mushroom/Fungus）**和**平菇（Oyster Mushrooms）**，但并未涉及香菇的相关数据。\n\n因此，无法基于现有资料回答关于香菇的营养成分或健康益处的问题。\n\n### References"
+    },
+    {
+      "case_id": "PLAN-002",
+      "layer": "L3_planner",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "sub_tasks": [
+          "列出香肠炒菜干的主辅料用量",
+          "香肠炒菜干的食材具有什么健康功效"
+        ]
+      },
+      "error": null,
+      "latency_ms": 20992.9,
+      "response_preview": "### 川菜概览\n根据当前提供的知识库信息，**香肠炒菜干**（Sausage Stir-Fried with Dried Vegetables）的主要食材包括**香肠**和**干菜**（即 dried vegetables）。然而，关于这两种食材的具体健康功效，现有上下文并未提供详细说明。\n\n知识库仅指出：\n- **香肠**是一种用于该菜肴的食品原料；\n- **干菜**是经过脱水处理的蔬菜，作为该菜肴的关键成分之一。\n\n虽然在一般营养学中，干菜可能保留部分维生素和膳食纤维，而香肠则通常富含蛋白质但可能含有较高脂肪和钠，但这些属于外部常识。依据本系统的使用规则，**不能基于外部知识进行推断或补"
+    },
+    {
+      "case_id": "PLAN-003",
+      "layer": "L3_planner",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "sub_tasks": [
+          "查找咸鲜口味的热菜菜品",
+          "在这些菜品中挑选烹饪时间较短的示例"
+        ]
+      },
+      "error": null,
+      "latency_ms": 34811.0,
+      "response_preview": "### 川菜概览\n根据提供的知识库信息，以下是一些具有**咸鲜口味**特征的**热菜菜品**：\n\n- **红烧海鲈鱼（Hong Shao Hai Lu Yu）**：这是一道采用红烧技法制作的中式热菜，主料为海鲈鱼。红烧做法通常使用酱油、糖等调料，成菜色泽红亮、味道咸鲜微甜，突出鱼肉的鲜美。\n\n- **清蒸鲈鱼（Steamed Sea Bass）**：虽然蒸制方式较为清淡，但该菜强调食材本味，常以酱油、葱姜等调味，呈现典型的咸鲜口感，是经典的咸鲜味型热菜。\n\n- **焖酥鱼（Mèn Sū Yú / Braised Crispy Fish）**：此菜通过慢火炖煮使鱼骨酥软，常用酱油、醋和香料调味，"
+    },
+    {
+      "case_id": "CYPHER-001",
+      "layer": "L3_text2cypher",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "retrieval": {
+          "cypher_must_contain": [
+            "MATCH",
+            "Dish",
+            "HAS_STEP"
+          ],
+          "neo4j_record_min": 1
+        }
+      },
+      "error": null,
+      "latency_ms": 13071.4,
+      "response_preview": "### 数据统计\n查询宫保鸡丁的制作步骤（HAS_STEP关系）：\n1. 腌制鸡腿肉:鸡腿去骨，鸡腿肉带皮切成丁，用生抽、料酒和淀粉腌制10分钟\n2. 爆炒:起油锅，放入花椒、干辣椒、葱姜蒜一起炒香。辣椒要炒到焦糊的状态，才能最大程度地释放它的味道\n3. 加碗芡:加入鸡丁、花生米一起翻炒，然后倒入酱汁。大火收汁，让每滴酱汁都均匀地包裹在鸡肉上~\n4. 出锅:还可以搭配黄瓜一起翻炒，增加口感。宫保鸡丁的特色就是辣中带甜，冲击味蕾后便是一股甜意，叫人欲罢不能~"
+    },
+    {
+      "case_id": "CYPHER-002",
+      "layer": "L3_text2cypher",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "retrieval": {
+          "cypher_must_contain": [
+            "HAS_MAIN_INGREDIENT"
+          ]
+        }
+      },
+      "error": null,
+      "latency_ms": 16045.4,
+      "response_preview": "### 川菜概览\n根据当前提供的知识库内容，**没有关于“红烧肉”这道菜的直接信息**。知识库中提到了几道名称相近的菜肴，例如：\n\n- **红烧豆腐**（Hong Shao Dou Fu）：主料是豆腐。\n- **红烧排骨卤蛋**（Red-Braised Pork Ribs with Braised Eggs）：主料是猪肋排和鸡蛋。\n\n但这些并不等同于传统意义上的“红烧肉”（通常指以五花肉为主料、用酱油和糖慢炖而成的经典中式菜肴）。\n\n因此，**无法从现有上下文中列出红烧肉的主食材及用量**。\n\n### References\n\n（无相关参考文献）"
+    },
+    {
+      "case_id": "SQL-001",
+      "layer": "L3_text2sql",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "retrieval": {
+          "sql_must_contain": [
+            "SELECT",
+            "COUNT"
+          ]
+        },
+        "generation": {
+          "require_statistics_number": true,
+          "grounded_only": true
+        }
+      },
+      "error": null,
+      "latency_ms": 15074.3,
+      "response_preview": "### 数据统计\n数据库中收录的菜品总数是多少：### 查询结果摘要\n问题：数据库中收录的菜品总数是多少\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n查询数据库中收录的菜品总数\n\n### 2. 涉及的表\n- recipes\n\n### 3. 关键字段\n- id\n\n### 6. 聚合需求\nCOUNT(*) 聚合统计菜品总数\n\n---\n### 结果预览\n```json\n[\n  {\n    \"total_recipes\": 70\n  }\n]\n```\n\n---\n### 可视化建议\n- 类型：table\n- 标题：菜品总数统计\n\n数据库中收录的菜品总数是多少：\ntotal_recip"
+    },
+    {
+      "case_id": "SQL-002",
+      "layer": "L3_text2sql",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "retrieval": {
+          "sql_must_contain": [
+            "GROUP BY",
+            "ORDER BY"
+          ]
+        }
+      },
+      "error": null,
+      "latency_ms": 16906.7,
+      "response_preview": "### 数据统计\n各菜系的菜谱数量分别是多少，哪个菜系最多？：抱歉，执行 SQL 时出现错误：仅支持只读 SELECT 查询"
+    },
+    {
+      "case_id": "SQL-003",
+      "layer": "L3_text2sql",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "text2sql-query",
+        "logic": ""
+      },
+      "expected": {
+        "retrieval": {
+          "sql_must_contain": [
+            "WHERE",
+            "COUNT"
+          ]
+        }
+      },
+      "error": null,
+      "latency_ms": 16173.0,
+      "response_preview": "### 数据统计\n统计川菜菜谱的总数：### 查询结果摘要\n问题：统计川菜菜谱的总数\n\n---\n\n## SQL 命令分析报告\n\n### 1. 查询意图\n统计川菜（Sichuan cuisine）菜谱的总数\n\n### 2. 涉及的表\n- recipes\n- cuisines\n\n### 3. 关键字段\n- recipes.id\n- cuisines.name\n\n### 4. 连接关系\nrecipes.cuisine_id = cuisines.id\n\n### 5. 筛选条件\ncuisines.name = '川菜'\n\n### 6. 聚合需求\nCOUNT(recipes.id)\n\n### 7. 排序"
+    },
+    {
+      "case_id": "GEN-KB-001",
+      "layer": "L5_generation_kb",
+      "passed": true,
+      "checks": {
+        "must_contain:宫保": true,
+        "must_not_contain:第一步": true,
+        "must_not_contain:第二步": true,
+        "must_not_contain:克": true,
+        "must_not_contain:毫升": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "grounded_only": true,
+          "forbid_cooking_steps": true,
+          "forbid_medical_claims": true,
+          "language": "zh-CN"
+        },
+        "must_contain": [
+          "宫保"
+        ],
+        "must_not_contain": [
+          "第一步",
+          "第二步",
+          "克",
+          "毫升"
+        ]
+      },
+      "error": null,
+      "latency_ms": 13966.5,
+      "response_preview": "宫保鸡丁是一道具有深厚历史背景的经典川菜，其起源可追溯至清代。据记载，这道菜由时任四川总督的丁宝桢所创。丁宝桢为贵州人，曾任山东巡抚，后调任四川总督，官至太子少保，而“宫保”正是这一荣誉官衔的俗称。\n\n丁宝桢本人嗜好辣味菜肴，尤其喜欢以鸡肉、花生与辣椒同炒的风味。他的家厨根据其口味偏好，创制了一道辣中带甜、鲜香微麻的鸡丁菜肴。后来，这道菜因其独特风味广受欢迎，并以其主人的官衔“宫保”命名，称为“宫保鸡丁”。\n\n此菜不仅体现了川菜“一菜一格，百菜百味”的特点，也融合了地方口味与官员身份的文化印记，成为川菜走向全国乃至世界的重要代表之一。\n\n来源：[PostgreSQL#1]"
+    },
+    {
+      "case_id": "GEN-KB-002",
+      "layer": "L5_generation_kb",
+      "passed": false,
+      "checks": {
+        "must_contain:暂未找到": false,
+        "must_contain:知识库": false
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "empty_retrieval_behavior": "明确说明知识库暂无相关记载"
+        },
+        "must_contain": [
+          "暂未找到",
+          "知识库"
+        ]
+      },
+      "error": null,
+      "latency_ms": 3854.7,
+      "response_preview": "问题涉及火星上的菜谱历史，不属于中华饮食文化史及相关知识范围。"
+    },
+    {
+      "case_id": "GEN-KB-003",
+      "layer": "L5_generation_kb",
+      "passed": true,
+      "checks": {
+        "must_not_contain:先把油烧热": true,
+        "must_not_contain:步骤": true
+      },
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "must_not_contain": [
+          "先把油烧热",
+          "步骤"
+        ]
+      },
+      "error": null,
+      "latency_ms": 28227.0,
+      "response_preview": "蔬菜传入中国的历史悠久且分阶段，不同种类的蔬菜在不同时期通过贸易、外交或探险活动陆续引入。以下是主要阶段和代表性蔬菜的传入情况：\n\n---\n\n### **先秦至汉代：早期本土与西域引进**\n- **先秦时期**已有大量本土蔬菜，如莕菜、莼菜、蒌蒿、青菜（非大白菜）、葫芦、萝卜、荠菜、水芹、笋、莲藕、芥菜、小蒜、芜菁、甜瓜、芋艿等。\n- **汉代**是蔬菜引进的重要时期，张骞出使西域后带回了多种外来作物，包括：\n  - **胡瓜**（即黄瓜）\n  - **大蒜**\n  - **芫荽**（香菜）\n  - **蚕豆**\n  - **芝麻**（有争议）\n  - **苜蓿**\n  - **茄子、豇豆、山"
+    },
+    {
+      "case_id": "GEN-SUM-001",
+      "layer": "L5_generation_summarize",
+      "passed": true,
+      "checks": {
+        "must_contain:香肠": true,
+        "must_contain:菜干": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "grounded_only": true,
+          "require_cooking_steps": true
+        },
+        "must_contain": [
+          "香肠",
+          "菜干"
+        ]
+      },
+      "error": null,
+      "latency_ms": 12673.8,
+      "response_preview": "### 川菜概览\n根据当前提供的知识库信息，可以确认“香肠炒菜干”（Sausage Stir-Fried with Dried Vegetables）是一道中式菜肴，其主要食材包括**香肠**和**干菜**（即干制蔬菜）。这道菜通常采用**炒**的烹饪方式制作。\n\n然而，关于该菜肴的具体**制作步骤**以及**完整的食材清单**（例如是否需要辅料如蒜、姜、酱油或其他调味料），在所提供的上下文中**并未包含详细说明**。知识库仅明确了这道菜的核心组成成分和基本烹饪方法。\n\n### References\n\n- [1] 香肠炒菜干"
+    },
+    {
+      "case_id": "GEN-SUM-002",
+      "layer": "L5_generation_summarize",
+      "passed": true,
+      "checks": {
+        "must_not_contain:第一步": true
+      },
+      "actual": {
+        "router_type": "graphrag-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "empty_retrieval_behavior": "暂未查询到"
+        },
+        "must_not_contain": [
+          "第一步"
+        ]
+      },
+      "error": null,
+      "latency_ms": 16104.7,
+      "response_preview": "No data to summarize."
+    },
+    {
+      "case_id": "GEN-GEN-001",
+      "layer": "L5_generation_general",
+      "passed": false,
+      "checks": {
+        "must_contain:好": true,
+        "must_contain:您好": false,
+        "must_contain:亲": true,
+        "must_contain:厨友": false
+      },
+      "actual": {
+        "router_type": "general-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "tone": [
+            "亲",
+            "厨友"
+          ],
+          "grounded_only": false
+        },
+        "must_contain": [
+          "好",
+          "您好",
+          "亲",
+          "厨友"
+        ]
+      },
+      "error": null,
+      "latency_ms": 3177.7,
+      "response_preview": "亲～你好呀！👋  \n感谢你的问候，有什么菜谱、食材或者烹饪相关的问题需要帮忙吗？😊  \n随时告诉我哦～🍲"
+    },
+    {
+      "case_id": "GEN-GEN-002",
+      "layer": "L5_generation_general",
+      "passed": true,
+      "checks": {
+        "must_not_contain:SELECT": true,
+        "must_not_contain:Cypher": true
+      },
+      "actual": {
+        "router_type": "additional-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "max_length_chars": 80
+        },
+        "must_not_contain": [
+          "SELECT",
+          "Cypher"
+        ]
+      },
+      "error": null,
+      "latency_ms": 3804.9,
+      "response_preview": "厨友想做什么菜呀？😊"
+    },
+    {
+      "case_id": "GEN-FALLBACK-001",
+      "layer": "L5_generation_kb",
+      "passed": true,
+      "checks": {},
+      "actual": {
+        "router_type": "kb-query",
+        "logic": ""
+      },
+      "expected": {
+        "generation": {
+          "grounded_only": true
+        }
+      },
+      "error": null,
+      "latency_ms": 8054.2,
+      "response_preview": "抱歉，菜谱文化知识库暂未找到相关记载，请尝试描述得更具体一些或稍后再试。"
+    }
+  ]
+}
